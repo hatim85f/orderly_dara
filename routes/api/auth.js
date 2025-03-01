@@ -19,6 +19,9 @@ const secretToken =
 const mailAPIKey = process.env.mail_API;
 
 // get all users
+router.get("/", async (req, res) => {
+  return res.status(200).json({ message: "All users" });
+});
 
 // @route   GET api/auth
 // @desc    Get user by token
