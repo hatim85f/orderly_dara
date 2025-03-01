@@ -1,4 +1,4 @@
 {
-  "mongoURI": "mongodb+srv://hatimfayez85:hatim1234@elegantflow.tev0j.mongodb.net/",
+  "mongoURI": "mongodb+srv://hatimfayez85:hatim1234@cluster0.igib2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
   "jwtSecret": "mysecrettoken"
 }
