@@ -23,8 +23,8 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
-router.put("/", auth, async (req, res) => {
-  const { userId } = req.body;
+router.put("/:userId", auth, async (req, res) => {
+  const { userId } = req.params;
   const { firstName, lastName, email, phone, profilePicture } = req.body;
 
   const profileFields = {};
