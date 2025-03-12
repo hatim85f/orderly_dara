@@ -30,6 +30,7 @@ const UserSchema = Schema(
         "Country Manager",
         "Sales Supervisor",
         "Medical Rep",
+        "Senior Medical Rep",
         "KAM",
         "Admin",
       ],
