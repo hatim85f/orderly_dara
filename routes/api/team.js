@@ -5,8 +5,7 @@ const jwt = require("jsonwebtoken");
 const config = require("config");
 const auth = require("../../middleware/auth");
 
-const { check, validationResult } = require("express-validator");
-
+const Team = require("../../models/Team");
 const User = require("../../models/User");
 
 const sgMail = require("@sendgrid/mail");
@@ -18,71 +17,49 @@ const secretToken =
 
 const mailAPIKey = process.env.mail_API;
 
-// get all users
-router.get("/", async (req, res) => {
-  return res.status(200).json({ message: "All users" });
+router.post("/create/:userId", auth, async (req, res) => {
+  const { userId } = req.params;
+  const { name } = req.body;
+
+  try {
+    const isTeamAvailable = await Team.findOne({
+      name: name,
+    });
+
+    if (isTeamAvailable) {
+      return res.status(400).send({
+        error: "Team name already exists",
+      });
+    }
+
+    const newTeam = new Team({
+      name: name,
+      managerId: userId,
+    });
+
+    await newTeam.save();
+
+    await User.updateOne(
+      { _id: userId },
+      {
+        $set: {
+          team: newTeam._id,
+        },
+      }
+    );
+
+    return res.status(200).send({
+      message: `Team ${name} created successfully`,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      error: "Server Error, please try again later or contact support",
+    });
+  }
 });
 
-// @route   GET api/auth
-// @desc    Get user by token
-// @access  Private
-
-// @route   POST api/auth
-// @desc    Authenticate user & get token
-// @access  Public
-router.post(
-  "/login",
-  [
-    check("email", "Username must be a valid email").isEmail(),
-    check("password", "Password is required").exists(),
-  ],
-  async (req, res) => {
-    const { email, password } = req.body;
-
-    try {
-      let user = await User.findOne({ email });
-
-      if (!user) {
-        return res.status(400).json({
-          error: "Error",
-          message: "Invalid Credentials",
-        });
-      }
-
-      const isMatch = await bcrypt.compare(password, user.password);
-
-      if (!isMatch) {
-        return res.status(400).json({
-          error: "Error",
-          message: "Invalid Username or Password",
-        });
-      }
-
-      const payload = {
-        user: {
-          id: user.id,
-        },
-      };
-
-      jwt.sign(payload, secretToken, (error, token) => {
-        if (error) throw error;
-        res.json({
-          token,
-          user: user,
-        });
-      });
-    } catch (error) {
-      return res
-        .status(500)
-        .send({ error: "ERROR", message: "Invalid Username or Password" });
-    }
-  }
-);
-
-// @route   POST create user
-// @desc    Register user
-// @access Public
-router.post("/register", async (req, res) => {
+router.post("/addEmployee/:teamId", auth, async (req, res) => {
+  const { teamId } = req.params;
   const {
     firstName,
     lastName,
@@ -114,6 +91,7 @@ router.post("/register", async (req, res) => {
         ? profilePicture
         : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541",
       area,
+      team: teamId,
     });
 
     sgMail.setApiKey(mailAPIKey);
@@ -155,26 +133,10 @@ router.post("/register", async (req, res) => {
       });
     });
   } catch (error) {
-    return res
-      .status(500)
-      .send({ error: "Error in saving user", message: error.message });
+    return res.status(500).send({
+      error: "Server Error, please try again later or contact support",
+    });
   }
 });
-
-// @route   POST api/auth
-// @desc    Authenticate user & get token
-// @access  Public
-
-// @route   POST api/auth/forgot-password
-// @desc    Send reset password link to user email
-// @access  Public
-
-// @route   PUT api/auth
-// @desc    Update user
-// @access Private
-
-// @route   DELETE api/auth
-// @desc    Delete user
-// @access Private
 
 module.exports = router;
