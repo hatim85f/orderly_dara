@@ -121,16 +121,20 @@ router.post("/addEmployee/:teamId", auth, async (req, res) => {
 
     await newUser.save();
 
-    let sanitizedUser = { ...newUser.toObject() };
-    delete sanitizedUser.password;
+    return res.status(200).send({
+      message: "User created successfully",
 
-    jwt.sign(payload, secretToken, (error, token) => {
-      if (error) throw error;
-      res.json({
-        token,
-        user: sanitizedUser,
-        message: "User created successfully",
-      });
+      user: {
+        id: newUser.id,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        email: newUser.email,
+        phone: newUser.phone,
+        role: newUser.role,
+        profilePicture: newUser.profilePicture,
+        area: newUser.area,
+        team: newUser.team,
+      },
     });
   } catch (error) {
     return res.status(500).send({
