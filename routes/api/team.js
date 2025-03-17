@@ -9,6 +9,7 @@ const Team = require("../../models/Team");
 const User = require("../../models/User");
 
 const sgMail = require("@sendgrid/mail");
+const { default: mongoose } = require("mongoose");
 
 const secretToken =
   process.env.NODE_ENV === "production"
@@ -143,7 +144,7 @@ router.post("/addEmployee/:teamId", auth, async (req, res) => {
     await newUser.save();
 
     await Team.updateOne(
-      { _id: teamId },
+      { _id: mongoose.Types.ObjectId(teamId) },
       {
         $push: {
           employees: newUser._id,
