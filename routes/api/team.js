@@ -38,7 +38,7 @@ router.get("/:userId", async (req, res) => {
 
 router.post("/create/:userId", auth, async (req, res) => {
   const { userId } = req.params;
-  const { name } = req.body;
+  const { name, lgoo } = req.body;
 
   try {
     const isTeamAvailable = await Team.findOne({
@@ -54,6 +54,7 @@ router.post("/create/:userId", auth, async (req, res) => {
     const newTeam = new Team({
       name: name,
       managerId: userId,
+      teamLogo: logo,
     });
 
     await newTeam.save();

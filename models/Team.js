@@ -17,7 +17,11 @@ const TeamSchema = new Schema(
         ref: "User",
       },
     ], // Employees in the team
-
+    teamLogo: {
+      type: String,
+      default:
+        "https://res.cloudinary.com/dxkufsejm/image/upload/v1626896889/Orderly/teams/placeholder.png",
+    },
     teamTarget: {
       type: Number,
       default: 0,
