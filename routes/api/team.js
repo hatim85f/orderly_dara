@@ -142,6 +142,15 @@ router.post("/addEmployee/:teamId", auth, async (req, res) => {
 
     await newUser.save();
 
+    await Team.updateOne(
+      { _id: teamId },
+      {
+        $push: {
+          employees: newUser._id,
+        },
+      }
+    );
+
     return res.status(200).send({
       message: "User created successfully",
 
