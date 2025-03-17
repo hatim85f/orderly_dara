@@ -168,7 +168,8 @@ router.post("/addEmployee/:teamId", auth, async (req, res) => {
     });
   } catch (error) {
     return res.status(500).send({
-      error: "Server Error, please try again later or contact support",
+      error: "ERROR !",
+      message: error.message,
     });
   }
 });
