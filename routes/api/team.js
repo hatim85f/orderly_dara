@@ -144,7 +144,7 @@ router.post("/addEmployee/:teamId", auth, async (req, res) => {
     await newUser.save();
 
     await Team.updateOne(
-      { _id: mongoose.Types.ObjectId(teamId) },
+      { _id: new mongoose.Types.ObjectId(teamId) },
       {
         $push: {
           employees: newUser._id,
