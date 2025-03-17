@@ -17,6 +17,25 @@ const secretToken =
 
 const mailAPIKey = process.env.mail_API;
 
+router.get("/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const team = await Team.findOne({ managerId: userId });
+
+    const userTeam = team || [];
+
+    return res.status(200).send({
+      team: userTeam,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      error: "ERROR !",
+      message: "Server Error, please try again later or contact support",
+    });
+  }
+});
+
 router.post("/create/:userId", auth, async (req, res) => {
   const { userId } = req.params;
   const { name } = req.body;
