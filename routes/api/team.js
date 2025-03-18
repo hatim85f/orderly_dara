@@ -64,7 +64,7 @@ router.get("/:userId", async (req, res) => {
       },
     ]);
 
-    const userTeam = team || [];
+    const userTeam = team[0] || [];
 
     return res.status(200).send({
       team: userTeam,
