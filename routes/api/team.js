@@ -22,7 +22,9 @@ router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const team = await Team.findOne({ managerId: userId });
+    const team = await Team.findOne({
+      managerId: new mongoose.Types.ObjectId(userId),
+    });
 
     const userTeam = team || [];
 
