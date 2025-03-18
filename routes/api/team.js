@@ -22,9 +22,47 @@ router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const team = await Team.findOne({
-      managerId: new mongoose.Types.ObjectId(userId),
+    const user = await User.findOne({
+      _id: userId,
     });
+
+    const team = await Team.aggregate([
+      {
+        $match: { _id: user.team },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "employees",
+          foreignField: "_id",
+          as: "employees",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          managerId: 1,
+          teamLogo: 1,
+          employees: {
+            _id: 1,
+            firstName: 1,
+            lastName: 1,
+            email: 1,
+            phone: 1,
+            role: 1,
+            profilePicture: 1,
+            area: 1,
+            monthlyAchievement: 1,
+            monthlySales: 1,
+            expenses: 1,
+            forecast: 1,
+            tasks: 1,
+            expoPushTokens: 1,
+          },
+        },
+      },
+    ]);
 
     const userTeam = team || [];
 
@@ -118,20 +156,20 @@ router.post("/addEmployee/:teamId", auth, async (req, res) => {
       team: teamId,
     });
 
-    // sgMail.setApiKey(mailAPIKey);
+    sgMail.setApiKey(mailAPIKey);
 
-    // const msg = {
-    //   to: email,
-    //   from: "info@orderly_sales.com",
-    //   templateId: "d-716eb488afa0459e88a34c6d6473a79c",
-    //   dynamic_template_data: {
-    //     subject: "Thank you for registering",
-    //     firstName: firstName,
-    //     lastName: lastName,
-    //   },
-    // };
+    const msg = {
+      to: email,
+      from: "info@orderly_sales.com",
+      templateId: "d-716eb488afa0459e88a34c6d6473a79c",
+      dynamic_template_data: {
+        subject: "Thank you for registering",
+        firstName: firstName,
+        lastName: lastName,
+      },
+    };
 
-    // sgMail.send(msg);
+    sgMail.send(msg);
 
     const payload = {
       user: {
