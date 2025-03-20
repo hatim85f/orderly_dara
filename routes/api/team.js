@@ -240,7 +240,7 @@ router.post("/inviteSupervisor/:userId", auth, async (req, res) => {
       { email: userEmail },
       {
         $set: {
-          bigTeam: teamId,
+          parentTeam: teamId,
           managerId: userId,
         },
       }
