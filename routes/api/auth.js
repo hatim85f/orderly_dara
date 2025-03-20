@@ -116,20 +116,20 @@ router.post("/register", async (req, res) => {
       area,
     });
 
-    sgMail.setApiKey(mailAPIKey);
+    // sgMail.setApiKey(mailAPIKey);
 
-    const msg = {
-      to: email,
-      from: "info@orderly_sales.com",
-      templateId: "d-716eb488afa0459e88a34c6d6473a79c",
-      dynamic_template_data: {
-        subject: "Thank you for registering",
-        firstName: firstName,
-        lastName: lastName,
-      },
-    };
+    // const msg = {
+    //   to: email,
+    //   from: "info@orderly_sales.com",
+    //   templateId: "d-716eb488afa0459e88a34c6d6473a79c",
+    //   dynamic_template_data: {
+    //     subject: "Thank you for registering",
+    //     firstName: firstName,
+    //     lastName: lastName,
+    //   },
+    // };
 
-    sgMail.send(msg);
+    // sgMail.send(msg);
 
     const payload = {
       user: {
