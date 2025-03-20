@@ -22,13 +22,9 @@ router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const user = await User.findOne({
-      _id: userId,
-    });
-
     const team = await Team.aggregate([
       {
-        $match: { _id: user.team },
+        $match: { managerId: new mongoose.Types.ObjectId(userId) },
       },
       {
         $lookup: {
