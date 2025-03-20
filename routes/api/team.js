@@ -9,7 +9,7 @@ const Team = require("../../models/Team");
 const User = require("../../models/User");
 
 const sgMail = require("@sendgrid/mail");
-const { default: mongoose } = require("mongoose");
+const { default: mongoose, mongo } = require("mongoose");
 
 const secretToken =
   process.env.NODE_ENV === "production"
@@ -29,8 +29,8 @@ router.get("/:userId", async (req, res) => {
       {
         $lookup: {
           from: "users",
-          localField: "employees",
-          foreignField: "_id",
+          localField: "managerId",
+          foreignField: new mongoose.Types.ObjectId(userId),
           as: "employees",
         },
       },
@@ -240,7 +240,7 @@ router.post("/inviteSupervisor/:userId", auth, async (req, res) => {
 
     if (!selectedUser) {
       return res.status(400).send({
-        error: "User not found",
+        error: "ERROR !",
         message: "User not found",
       });
     }
@@ -251,6 +251,15 @@ router.post("/inviteSupervisor/:userId", auth, async (req, res) => {
         $set: {
           parentTeam: teamId,
           managerId: userId,
+        },
+      }
+    );
+
+    await Team.updateOne(
+      { _id: teamId },
+      {
+        $addToSet: {
+          employees: selectedUser._id,
         },
       }
     );
