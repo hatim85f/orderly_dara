@@ -142,6 +142,8 @@ router.post("/addEmployee/:teamId", auth, async (req, res) => {
         .send({ error: "Error", message: "User already exists" });
     }
 
+    const team = await Team.findOne({ _id: teamId });
+
     const newUser = await new User({
       firstName,
       lastName,
@@ -154,6 +156,7 @@ router.post("/addEmployee/:teamId", auth, async (req, res) => {
         : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541",
       area,
       team: teamId,
+      managerId: team.managerId,
     });
 
     sgMail.setApiKey(mailAPIKey);
@@ -205,6 +208,7 @@ router.post("/addEmployee/:teamId", auth, async (req, res) => {
         profilePicture: newUser.profilePicture,
         area: newUser.area,
         team: newUser.team,
+        managerId: newUser.managerId,
       },
     });
   } catch (error) {

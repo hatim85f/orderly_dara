@@ -36,6 +36,14 @@ const UserSchema = Schema(
       ],
       default: "Medical Rep",
     },
+    managerId: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+    },
+    parentTeam: {
+      type: mongoose.Types.ObjectId,
+      ref: "Team",
+    },
     profilePicture: {
       type: String,
     },
