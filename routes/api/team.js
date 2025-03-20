@@ -236,6 +236,15 @@ router.post("/inviteSupervisor/:userId", auth, async (req, res) => {
 
     const teamId = team._id;
 
+    const selectedUser = await User.findOne({ email: userEmail });
+
+    if (!selectedUser) {
+      return res.status(400).send({
+        error: "User not found",
+        message: "User not found",
+      });
+    }
+
     await User.updateOne(
       { email: userEmail },
       {
