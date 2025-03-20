@@ -215,4 +215,48 @@ router.post("/addEmployee/:teamId", auth, async (req, res) => {
   }
 });
 
+// country manager only sending an invitation for the supervisors to join the team
+router.post("/inviteSupervisor/:userId", auth, async (req, res) => {
+  const { userId } = req.params;
+  const { userEmail } = req.body;
+
+  try {
+    const user = await User.findOne({ _id: userId });
+
+    const userRole = user.role;
+
+    if (userRole !== "Country Manager") {
+      return res.status(401).send({
+        error: "Unauthorized",
+        message: "You are not authorized to perform this action",
+      });
+    }
+
+    const team = await Team.findOne({ managerId: userId });
+
+    const teamId = team._id;
+
+    await User.updateOne(
+      { email: userEmail },
+      {
+        $set: {
+          bigTeam: teamId,
+          managerId: userId,
+        },
+      }
+    );
+
+    // notification should be sent to the user to join the team
+
+    return res.status(200).send({
+      message: "Invitation sent successfully",
+    });
+  } catch (error) {
+    return res.status(500).send({
+      error: "ERROR !",
+      message: error.message,
+    });
+  }
+});
+
 module.exports = router;
