@@ -47,6 +47,12 @@ const UserSchema = Schema(
     profilePicture: {
       type: String,
     },
+    teams: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Team",
+      },
+    ],
     team: {
       type: mongoose.Types.ObjectId,
       ref: "Team",

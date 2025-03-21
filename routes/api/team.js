@@ -29,8 +29,8 @@ router.get("/:userId", async (req, res) => {
       {
         $lookup: {
           from: "users",
-          localField: "managerId",
-          foreignField: new mongoose.Types.ObjectId(userId),
+          localField: "employees",
+          foreignField: "_id",
           as: "employees",
         },
       },
@@ -55,6 +55,7 @@ router.get("/:userId", async (req, res) => {
             forecast: 1,
             tasks: 1,
             expoPushTokens: 1,
+            team: 1,
           },
         },
       },
@@ -68,7 +69,7 @@ router.get("/:userId", async (req, res) => {
   } catch (error) {
     return res.status(500).send({
       error: "ERROR !",
-      message: "Server Error, please try again later or contact support",
+      message: error.message,
     });
   }
 });
@@ -99,8 +100,8 @@ router.post("/create/:userId", auth, async (req, res) => {
     await User.updateOne(
       { _id: userId },
       {
-        $set: {
-          team: newTeam._id,
+        $addToSet: {
+          teams: newTeam._id,
         },
       }
     );
