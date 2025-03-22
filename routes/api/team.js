@@ -78,7 +78,7 @@ router.get("/memberData/:memberId", auth, async (req, res) => {
   const { memberId } = req.params;
 
   try {
-    const member = await User.fineOne({ _id: memberId });
+    const member = await User.findOne({ _id: memberId });
 
     return res.status(200).send({
       member,
