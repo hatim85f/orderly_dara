@@ -74,6 +74,23 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
+router.get("/memberData/:memberId", auth, async (req, res) => {
+  const { memberId } = req.params;
+
+  try {
+    const member = await User.fineOne({ _id: memberId });
+
+    return res.status(200).send({
+      member,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      error: "ERROR !",
+      message: error.message,
+    });
+  }
+});
+
 router.post("/create/:userId", auth, async (req, res) => {
   const { userId } = req.params;
   const { name, teamLogo } = req.body;
