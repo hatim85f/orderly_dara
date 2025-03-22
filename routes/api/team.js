@@ -280,7 +280,7 @@ router.post("/inviteSupervisor/:userId", auth, async (req, res) => {
 
 // removing supervisor or medical rep from the team by using member ID
 
-router.put("/memberId", auth, async (req, res) => {
+router.put("/removeMember/:memberId", auth, async (req, res) => {
   const { memberId } = req.params;
   const { teamId } = req.body;
 
