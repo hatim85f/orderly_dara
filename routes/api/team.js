@@ -278,4 +278,50 @@ router.post("/inviteSupervisor/:userId", auth, async (req, res) => {
   }
 });
 
+// removing supervisor or medical rep from the team by using member ID
+
+router.put("/memberId", auth, async (req, res) => {
+  const { memberId } = req.params;
+  const { teamId } = req.body;
+
+  try {
+    const user = await User.findOne({ _id: memberId });
+
+    if (!user) {
+      return res.status(500).send({
+        error: "ERROR !",
+        message: "User not found",
+      });
+    }
+
+    await Team.updateOne(
+      { _id: teamId },
+      {
+        $pull: {
+          employees: memberId,
+        },
+      }
+    );
+
+    await User.updateOne(
+      { _id: memberId },
+      {
+        $set: {
+          team: null,
+          managerId: null,
+        },
+      }
+    );
+
+    return res.status(200).send({
+      message: `User ${user.firstName} ${user.lastName} removed successfully, his/her data remains the same until he delete his account or join another team`,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      error: "ERROR !",
+      message: "Something went wrong, please try again later",
+    });
+  }
+});
+
 module.exports = router;
