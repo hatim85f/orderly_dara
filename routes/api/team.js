@@ -22,9 +22,23 @@ router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
 
   try {
+    const user = await User.findOne({ _id: userId });
+
+    const matchCondition = {};
+
+    // if the user is not a medical rep or senior medical rep, then the team._id should be in the array of user.teams
+
+    if (user.role !== "Medical Rep" || user.role !== "Senior Medical Rep") {
+      matchCondition._id = {
+        $in: user.teams,
+      };
+    } else {
+      matchCondition._id = user.team;
+    }
+
     const team = await Team.aggregate([
       {
-        $match: { managerId: new mongoose.Types.ObjectId(userId) },
+        $match: matchCondition,
       },
       {
         $lookup: {
@@ -61,7 +75,7 @@ router.get("/:userId", async (req, res) => {
       },
     ]);
 
-    const userTeam = team[0] || [];
+    const userTeam = team || [];
 
     return res.status(200).send({
       team: userTeam,
